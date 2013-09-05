@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 public class Level {
 	int[][] data;
 	int width, height;
+	Palette palette;
 
 	private void _init(int w, int h) {
 		data = new int[w][h];
@@ -19,6 +20,8 @@ public class Level {
 	}
 
 	public Level(String levelString, String paletteString) {
+		palette = new Palette(paletteString);
+		
 		String[] rows = levelString.split("\n");
 		String[] meta = rows[0].split(",");
 		int w = Integer.parseInt(meta[0]);
@@ -37,6 +40,26 @@ public class Level {
 					data[w][h] = 0;
 				}
 			}
+		}
+	}
+	
+	public Color getColorAt(int x, int y) {
+		try {
+			return palette.getColor(data[x][y]);
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "An error has occurred while fetching colors. (" + x + ", " + y + ")");
+			if(palette != null) {
+				return palette.getColor(0);
+			} else return Color.black;
+		}
+	}
+	
+	public int getDataAt(int x, int y) {
+		try {
+			return data[x][y];
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "An error has occurred while fetching data. (" + x + ", " + y + ")");
+			return 0;
 		}
 	}
 }
