@@ -3,6 +3,8 @@ package meew0.ld.level;
 import java.awt.Color;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 public class Palette {
 	HashMap<Integer, Color> data;
 
@@ -13,12 +15,29 @@ public class Palette {
 	public Palette(String pStr) {
 		String[] rows = pStr.split("\n");
 		for (String row : rows) {
-			String[] rDat = row.split(" ");
-			int num;
-			Color color;
-			num = Integer.parseInt(rDat[0]);
-			color = new Color(Integer.parseInt(rDat[1]),
-					Integer.parseInt(rDat[2]), Integer.parseInt(rDat[3]));
+			try {
+				String[] rDat = row.split(" ");
+				int num;
+				Color color;
+				num = Integer.parseInt(rDat[0]);
+				color = new Color(Integer.parseInt(rDat[1]),
+						Integer.parseInt(rDat[2]), Integer.parseInt(rDat[3]));
+				data.put(num, color);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null,
+						"An error has occurred while parsing the palette file. (NFE at: " + row + ")");
+			}
 		}
+		if(!data.containsKey(0)) {
+			data.put(0, Color.black);
+		}
+	}
+	
+	public Color getColor(int i) {
+		return data.get(i);
+	}
+	
+	public void put(int i, Color c) {
+		data.put(i, c);
 	}
 }
