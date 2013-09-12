@@ -6,41 +6,68 @@ import javax.swing.JOptionPane;
 
 public class Level {
 	int[][] data;
-	int width, height;
+	int width, height, ps;
+	
+	public int getPixelSize() {
+		return ps;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
 	Palette palette;
 
-	private void _init(int w, int h) {
+	private void _init(int w, int h, int pixelSize) {
 		data = new int[w][h];
 		width = w;
 		height = h;
+		ps = pixelSize;
+	}
+	
+	private void _init2(String[] rows) {
+		String[] meta = rows[0].split(",");
+		int w = Integer.parseInt(meta[0]);
+		int h = Integer.parseInt(meta[1]);
+		int pixelSize = Integer.parseInt(meta[2]);
+		_init(w, h, pixelSize);
+
+		for (int i = 0; i < w; i++) {
+			String[] pixels = rows[i+1].split(",");
+			for (int j = 0; j < h; j++) {
+				try {
+					data[i][j] = Integer.parseInt(pixels[j]);
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(null,
+							"An error has occurred while parsing the level file. (NFE at row "
+									+ j + ", column " + i + ")");
+					data[i][j] = 0;
+				}
+			}
+		}
 	}
 
-	public Level(int w, int h) {
-		_init(w, h);
+	public Level(int w, int h, int pixelSize) {
+		_init(w, h, pixelSize);
 	}
 
 	public Level(String levelString, String paletteString) {
 		palette = new Palette(paletteString);
 		
 		String[] rows = levelString.split("\n");
-		String[] meta = rows[0].split(",");
-		int w = Integer.parseInt(meta[0]);
-		int h = Integer.parseInt(meta[1]);
-		_init(w, h);
+		_init2(rows);
+		
+	}
 
-		for (int i = 0; i < w; i++) {
-			String[] pixels = rows[i].split(",");
-			for (int j = 0; j < h; j++) {
-				try {
-					data[w][h] = Integer.parseInt(pixels[j]);
-				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null,
-							"An error has occurred while parsing the level file. (NFE at row "
-									+ j + ", column " + i + ")");
-					data[w][h] = 0;
-				}
-			}
-		}
+	public Level(String[] levelRows, String[] paletteRows) {
+		palette = new Palette(paletteRows);
+		
+		_init2(levelRows);
+		
 	}
 	
 	public Color getColorAt(int x, int y) {

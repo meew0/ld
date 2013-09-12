@@ -9,11 +9,10 @@ public class Palette {
 	HashMap<Integer, Color> data;
 
 	public Palette() {
-		data = new HashMap<Integer, Color>();
 	}
-
-	public Palette(String pStr) {
-		String[] rows = pStr.split("\n");
+	
+	private void _init(String[] rows) {
+		data = new HashMap<Integer, Color>();
 		for (String row : rows) {
 			try {
 				String[] rDat = row.split(" ");
@@ -31,6 +30,15 @@ public class Palette {
 		if(!data.containsKey(0)) {
 			data.put(0, Color.black);
 		}
+	}
+
+	public Palette(String pStr) {
+		String[] rows = pStr.split("\n");
+		_init(rows);
+	}
+	
+	public Palette(String[] rows) {
+		_init(rows);
 	}
 	
 	public Color getColor(int i) {
