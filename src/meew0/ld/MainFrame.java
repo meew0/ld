@@ -2,6 +2,7 @@ package meew0.ld;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -24,8 +25,15 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	
 	public static String VERSION = "02";
+	
+	public static final int CURSOR = 0;
+	public static final int PIXEL = 1;
+	public static final int LINE = 2;
+	public static final int ALL = 3;
+	
+	private DesignPanel panel;
+	private int tool, v = 0;
 	
 	public MainFrame() throws IOException {
 		super("ld"+VERSION);
@@ -61,6 +69,11 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		JMenuItem setLineToolItem = new JMenuItem("Set line"); setLineToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
 		JMenuItem setAllItem = new JMenuItem("Fill"); setAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		
+		noToolItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = CURSOR; }});
+		setToolItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = PIXEL; }});
+		setLineToolItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = LINE; }});
+		setAllItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = ALL; }});
+		
 		toolsMenu.add(undoToolItem);
 		toolsMenu.add(redoToolItem);
 		toolsMenu.addSeparator();
@@ -78,7 +91,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		String[] palRows = Files.readAllLines(Paths.get("testpal.ldp"), Charset.defaultCharset()).toArray(new String[]{});
 		Level lv = new Level(levelRows, palRows);
 		
-		DesignPanel panel = new DesignPanel(lv);
+		panel = new DesignPanel(lv);
 		panel.registerPanelListener(this);
 		this.add(panel);
 		
@@ -99,6 +112,27 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	public void onPanelClick(int x, int y) {
 		// TODO Auto-generated method stub
 		System.out.println("You clicked on pixel " + x + ", " + y);
+		if(x < panel.l.getWidth() && y < panel.l.getHeight()) {
+			switch(tool) {
+			case PIXEL:
+				panel.l.setDataAt(x, y, v);
+				break;
+			case LINE:
+				for(int i = 0; i < panel.l.getWidth(); i++) panel.l.setDataAt(i, y, v);
+				break;
+			case ALL:
+				for(int i = 0; i < panel.l.getWidth(); i++)
+					for(int j = 0; j < panel.l.getHeight(); j++)
+						panel.l.setDataAt(i, j, v);
+				break;
+			default:
+				System.out.println("Cursor or invalid tool");
+			}
+			System.out.println("Pixel value: " + panel.l.getDataAt(x, y));
+		} else {
+			System.out.println("Pixel outside of bounds!");
+		}
+		panel.repaint();
 	}
 
 }

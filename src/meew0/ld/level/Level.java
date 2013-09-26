@@ -81,6 +81,15 @@ public class Level {
 		}
 	}
 	
+	public void setDataAt(int x, int y, int v) {
+		try {
+			data[x][y] = v;
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "An error has occurred while setting data. (" + x + ", " + y + ")");
+		}
+		System.out.println("Internal pixel value: " + data[x][y]);
+	}
+	
 	public int getDataAt(int x, int y) {
 		try {
 			return data[x][y];

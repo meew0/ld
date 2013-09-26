@@ -18,7 +18,7 @@ public class DesignPanel extends JPanel implements MouseListener {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	Level l;
+	public Level l;
 	int ps;
 
 	boolean showGrid = true;
@@ -45,6 +45,7 @@ public class DesignPanel extends JPanel implements MouseListener {
 
 	@Override
 	protected void paintComponent(Graphics g) {
+		System.out.println("Redrawing panel");
 		for (int i = 0; i < l.getWidth(); i++) {
 			for (int j = 0; j < l.getHeight(); j++) {
 				g.setColor(l.getColorAt(i, j));
@@ -55,10 +56,10 @@ public class DesignPanel extends JPanel implements MouseListener {
 					}
 				}
 				// g.drawLine((i - 1) * ps - 1, j * ps - 1, i * ps - 1, j * ps -
-				// 1);
+				// 1);r
 				// g.drawLine(i * ps - 1, (j - 1) * ps - 1, i * ps - 1, j * ps -
-				// 1);
-				System.out.println("" + i + " " + j);
+//				// 1);
+//				System.out.println("" + i + " " + j);
 			}
 		}
 
@@ -69,6 +70,7 @@ public class DesignPanel extends JPanel implements MouseListener {
 				g.drawLine(i * ps - 1, j * ps - 1, i * ps - 1, (j + 1) * ps - 1);
 			}
 		}
+		System.out.println("--------------");
 	}
 
 	private void callPanelClick(int x, int y) {
