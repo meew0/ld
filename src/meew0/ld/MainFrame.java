@@ -1,12 +1,18 @@
 package meew0.ld;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 import meew0.ld.level.Level;
@@ -19,12 +25,54 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	private static final long serialVersionUID = 1L;
 	
 	
-	public static String VERSION = "01";
+	public static String VERSION = "02";
 	
 	public MainFrame() throws IOException {
 		super("ld"+VERSION);
 		
 		this.setBackground(Color.white);
+		
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenu fileMenu = new JMenu("File");
+		JMenuItem newFileItem = new JMenuItem("New"); newFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK)); 
+		JMenuItem openFileItem = new JMenuItem("Load"); openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		JMenuItem saveFileItem = new JMenuItem("Save"); saveFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		JMenuItem saveAsFileItem = new JMenuItem("Save as");
+		JMenuItem genFileItem = new JMenuItem("Generate string"); genFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
+		JMenuItem exitFileItem = new JMenuItem("Exit"); exitFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
+		
+		fileMenu.add(newFileItem);
+		fileMenu.addSeparator();
+		fileMenu.add(openFileItem);
+		fileMenu.add(saveFileItem);
+		fileMenu.add(saveAsFileItem);
+		fileMenu.add(genFileItem);
+		fileMenu.addSeparator();
+		fileMenu.add(exitFileItem);
+		
+		menuBar.add(fileMenu);
+		
+		JMenu toolsMenu = new JMenu("Tools");
+		JMenuItem undoToolItem = new JMenuItem("Undo"); undoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK)); 
+		JMenuItem redoToolItem = new JMenuItem("Redo"); redoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		JMenuItem noToolItem = new JMenuItem("Cursor"); noToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0)); 
+		JMenuItem setToolItem = new JMenuItem("Set pixel"); setToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
+		JMenuItem setLineToolItem = new JMenuItem("Set line"); setLineToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
+		JMenuItem setAllItem = new JMenuItem("Fill"); setAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+		
+		toolsMenu.add(undoToolItem);
+		toolsMenu.add(redoToolItem);
+		toolsMenu.addSeparator();
+		toolsMenu.add(noToolItem);
+		toolsMenu.add(setToolItem);
+		toolsMenu.add(setLineToolItem);
+		toolsMenu.add(setAllItem);
+		
+		menuBar.add(fileMenu);
+		menuBar.add(toolsMenu);
+		
+		this.setJMenuBar(menuBar);
 		
 		String[] levelRows = Files.readAllLines(Paths.get("testlevel.ldl"), Charset.defaultCharset()).toArray(new String[]{});
 		String[] palRows = Files.readAllLines(Paths.get("testpal.ldp"), Charset.defaultCharset()).toArray(new String[]{});
