@@ -1,6 +1,8 @@
 package meew0.ld;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,13 +12,18 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import meew0.ld.level.Level;
+import meew0.ld.level.PaletteEntry;
 
 public class MainFrame extends JFrame implements DesignPanelListener {
 	
@@ -91,9 +98,28 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		String[] palRows = Files.readAllLines(Paths.get("testpal.ldp"), Charset.defaultCharset()).toArray(new String[]{});
 		Level lv = new Level(levelRows, palRows);
 		
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout());
+		
 		panel = new DesignPanel(lv);
 		panel.registerPanelListener(this);
-		this.add(panel);
+		p.add(panel, BorderLayout.CENTER);
+		
+		final JList<PaletteEntry> list = new JList<PaletteEntry>(lv.getPaletteEntriesList().toArray(new PaletteEntry[0]));
+		list.setCellRenderer(new PaletteListRenderer());
+		list.setPreferredSize(new Dimension(100, 0));
+		
+		list.addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				v = list.getSelectedValue().getNum();
+			}
+		});
+		
+		p.add(list, BorderLayout.LINE_END);
+		
+		this.add(p);
 		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
@@ -133,6 +159,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 			System.out.println("Pixel outside of bounds!");
 		}
 		panel.repaint();
+		this.repaint();
 	}
 
 }

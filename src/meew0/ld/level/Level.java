@@ -1,6 +1,7 @@
 package meew0.ld.level;
 
 import java.awt.Color;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -18,6 +19,10 @@ public class Level {
 
 	public int getHeight() {
 		return height;
+	}
+	
+	public List<PaletteEntry> getPaletteEntriesList() {
+		return palette.getEntriesList();
 	}
 
 	Palette palette;
