@@ -41,7 +41,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		this.setBackground(Color.white);
 		
 		JMenuBar menuBar = new JMenuBar();
-		
+		// Init menus
 		JMenu fileMenu = new JMenu("File");
 		JMenuItem newFileItem = new JMenuItem("New"); newFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK)); 
 		JMenuItem openFileItem = new JMenuItem("Load"); openFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -49,7 +49,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		JMenuItem saveAsFileItem = new JMenuItem("Save as");
 		JMenuItem genFileItem = new JMenuItem("Generate string"); genFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
 		JMenuItem exitFileItem = new JMenuItem("Exit"); exitFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-		
+		// Init file menu
 		fileMenu.add(newFileItem);
 		fileMenu.addSeparator();
 		fileMenu.add(openFileItem);
@@ -60,7 +60,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		fileMenu.add(exitFileItem);
 		
 		menuBar.add(fileMenu);
-		
+		// Init tools menu
 		JMenu toolsMenu = new JMenu("Tools");
 		JMenuItem undoToolItem = new JMenuItem("Undo"); undoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK)); 
 		JMenuItem redoToolItem = new JMenuItem("Redo"); redoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
@@ -115,10 +115,10 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		if(x < panel.l.getWidth() && y < panel.l.getHeight()) {
 			switch(tool) {
 			case PIXEL:
-				panel.l.setDataAt(x, y, v);
+				panel.l.setDataAt(y, x, v);
 				break;
 			case LINE:
-				for(int i = 0; i < panel.l.getWidth(); i++) panel.l.setDataAt(i, y, v);
+				for(int i = 0; i < panel.l.getWidth(); i++) panel.l.setDataAt(y, i, v);
 				break;
 			case ALL:
 				for(int i = 0; i < panel.l.getWidth(); i++)

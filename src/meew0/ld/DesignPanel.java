@@ -44,7 +44,7 @@ public class DesignPanel extends JPanel implements MouseListener {
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected void paintComponent(Graphics g) { // Invalidation
 		System.out.println("Redrawing panel");
 		for (int i = 0; i < l.getWidth(); i++) {
 			for (int j = 0; j < l.getHeight(); j++) {
