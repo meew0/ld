@@ -3,6 +3,8 @@ package meew0.ld;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,8 +12,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Enumeration;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -21,6 +26,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.FontUIResource;
 
 import meew0.ld.level.Level;
 import meew0.ld.level.PaletteEntry;
@@ -32,7 +38,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static String VERSION = "02";
+	public static String VERSION = "03";
 	
 	public static final int CURSOR = 0;
 	public static final int PIXEL = 1;
@@ -40,6 +46,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	public static final int ALL = 3;
 	
 	private DesignPanel panel;
+	private JLabel statusLabel;
 	private int tool, v = 0;
 	
 	public MainFrame() throws IOException {
@@ -75,11 +82,18 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		JMenuItem setToolItem = new JMenuItem("Set pixel"); setToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0));
 		JMenuItem setLineToolItem = new JMenuItem("Set line"); setLineToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0));
 		JMenuItem setAllItem = new JMenuItem("Fill"); setAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+		JMenuItem zoomInItem = new JMenuItem("Zoom in"); zoomInItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0));
+		JMenuItem zoomOutItem = new JMenuItem("Zoom out"); zoomOutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0));
+		JMenuItem toggleGridItem = new JMenuItem("Toggle grid"); toggleGridItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
 		
 		noToolItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = CURSOR; }});
 		setToolItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = PIXEL; }});
 		setLineToolItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = LINE; }});
 		setAllItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { tool = ALL; }});
+		zoomInItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { panel.setDimension(panel.getDimension() * 2.0f); }});
+		zoomOutItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { panel.setDimension(panel.getDimension() * 0.5f); }});
+		toggleGridItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { panel.toggleGrid(); repaint(); }});
+		
 		
 		toolsMenu.add(undoToolItem);
 		toolsMenu.add(redoToolItem);
@@ -88,14 +102,20 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		toolsMenu.add(setToolItem);
 		toolsMenu.add(setLineToolItem);
 		toolsMenu.add(setAllItem);
+		toolsMenu.addSeparator();
+		toolsMenu.add(zoomInItem);
+		toolsMenu.add(zoomOutItem);
+		toolsMenu.add(toggleGridItem);
 		
 		menuBar.add(fileMenu);
 		menuBar.add(toolsMenu);
 		
+		menuBar.setBackground(UIManager.getColor("Panel.background"));
+		
 		this.setJMenuBar(menuBar);
 		
 		String[] levelRows = Files.readAllLines(Paths.get("testlevel.ldl"), Charset.defaultCharset()).toArray(new String[]{});
-		String[] palRows = Files.readAllLines(Paths.get("testpal.ldp"), Charset.defaultCharset()).toArray(new String[]{});
+		String[] palRows = Files.readAllLines(Paths.get(levelRows[0]), Charset.defaultCharset()).toArray(new String[]{});
 		Level lv = new Level(levelRows, palRows);
 		
 		JPanel p = new JPanel();
@@ -104,8 +124,13 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		panel = new DesignPanel(lv);
 		panel.registerPanelListener(this);
 		p.add(panel, BorderLayout.CENTER);
+
+		statusLabel = new JLabel("1.0x");
+		statusLabel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.gray));
+		p.add(statusLabel, BorderLayout.PAGE_END);
 		
 		final JList<PaletteEntry> list = new JList<PaletteEntry>(lv.getPaletteEntriesList().toArray(new PaletteEntry[0]));
+		list.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.gray));
 		list.setCellRenderer(new PaletteListRenderer());
 		list.setPreferredSize(new Dimension(100, 0));
 		
@@ -127,10 +152,31 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		this.setVisible(true);
 		
 	}
+	
+	public static void setFont(FontUIResource f) {
+		Enumeration<Object> keys = UIManager.getDefaults().keys();
+		while (keys.hasMoreElements()) {
+			Object key = keys.nextElement();
+			Object value = UIManager.get(key);
+			if (value != null && value instanceof FontUIResource) {
+				UIManager.put(key, f);
+			}
+		}
+	}
+	
+	public static void initLAF() {
+		setFont(new FontUIResource("Segoe UI", Font.PLAIN, 12));
+		
+		UIManager.put("Separator.foreground", Color.gray);
+		UIManager.put("MenuItem.acceleratorForeground", Color.gray);
+		UIManager.put("Separator.shadow", UIManager.get("MenuItem.background"));
+		
+		UIManager.put("Menu.selectionBackground", Color.lightGray);
+	}
 
 	public static void main(String[] args) throws Throwable {
-		// TODO Auto-generated method 
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		initLAF();
 		new MainFrame();
 	}
 
@@ -160,6 +206,11 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		}
 		panel.repaint();
 		this.repaint();
+	}
+
+	@Override
+	public void onInvalidation() {
+		statusLabel.setText("" + panel.getDimension() + "x - Grid " + (panel.isGrid() ? "enabled" : "disabled"));
 	}
 
 }

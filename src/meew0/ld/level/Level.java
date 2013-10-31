@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 public class Level {
 	int[][] data;
 	int width, height, ps;
+	String palettePath;
 	
 	public int getPixelSize() {
 		return ps;
@@ -35,14 +36,15 @@ public class Level {
 	}
 	
 	private void _init2(String[] rows) {
-		String[] meta = rows[0].split(",");
+		palettePath = rows[0];
+		String[] meta = rows[1].split(",");
 		int w = Integer.parseInt(meta[0]);
 		int h = Integer.parseInt(meta[1]);
 		int pixelSize = Integer.parseInt(meta[2]);
 		_init(w, h, pixelSize);
 
 		for (int i = 0; i < w; i++) {
-			String[] pixels = rows[i+1].split(",");
+			String[] pixels = rows[i+2].split(",");
 			for (int j = 0; j < h; j++) {
 				try {
 					data[i][j] = Integer.parseInt(pixels[j]);
