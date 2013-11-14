@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -49,6 +48,8 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	private JLabel statusLabel;
 	private int tool, v = 0;
 	
+	private boolean modified = false;
+	
 	public MainFrame() throws IOException {
 		super("ld"+VERSION);
 		
@@ -63,6 +64,10 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		JMenuItem saveAsFileItem = new JMenuItem("Save as");
 		JMenuItem genFileItem = new JMenuItem("Generate string"); genFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
 		JMenuItem exitFileItem = new JMenuItem("Exit"); exitFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
+
+		newFileItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { newFile(); }});
+		
+		
 		// Init file menu
 		fileMenu.add(newFileItem);
 		fileMenu.addSeparator();
@@ -153,6 +158,25 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		
 	}
 	
+	public void setLevelSize(int w, int h, int pixelSize) {
+		panel.l.setSize(w, h);
+		panel.l.setPixelSize(pixelSize);
+		panel.repaint(); this.repaint();
+		modified = true;
+	}
+	
+	public void newFile() {
+		if(!checkModified()) return;
+		Level lv = new Level(0, 0, 0);
+		panel.l = lv;
+		SizeDialog d = new SizeDialog(this);
+		d.setVisible(true);
+	}
+	
+	private boolean checkModified() {
+		return true;
+	}
+
 	public static void setFont(FontUIResource f) {
 		Enumeration<Object> keys = UIManager.getDefaults().keys();
 		while (keys.hasMoreElements()) {
@@ -182,20 +206,22 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 
 	@Override
 	public void onPanelClick(int x, int y) {
-		// TODO Auto-generated method stub
 		System.out.println("You clicked on pixel " + x + ", " + y);
 		if(x < panel.l.getWidth() && y < panel.l.getHeight()) {
 			switch(tool) {
 			case PIXEL:
 				panel.l.setDataAt(y, x, v);
+				modified = true;
 				break;
 			case LINE:
 				for(int i = 0; i < panel.l.getWidth(); i++) panel.l.setDataAt(y, i, v);
+				modified = true;
 				break;
 			case ALL:
 				for(int i = 0; i < panel.l.getWidth(); i++)
 					for(int j = 0; j < panel.l.getHeight(); j++)
 						panel.l.setDataAt(i, j, v);
+				modified = true;
 				break;
 			default:
 				System.out.println("Cursor or invalid tool");

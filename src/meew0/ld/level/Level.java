@@ -77,6 +77,10 @@ public class Level {
 		
 	}
 	
+	public void setPalette(Palette newPal) {
+		palette = newPal;
+	}
+	
 	public Color getColorAt(int x, int y) {
 		try {
 			return palette.getColor(data[x][y]);
@@ -104,5 +108,24 @@ public class Level {
 			JOptionPane.showMessageDialog(null, "An error has occurred while fetching data. (" + x + ", " + y + ")");
 			return 0;
 		}
+	}
+	
+	public void setSize(int newX, int newY) {
+		int[][] newData = new int[newX][newY];
+		for(int i = 0; i < newX; i++) {
+			for(int j = 0; j < newY; j++) {
+				if(i >= width || j >= height) {
+					newData[i][j] = 0;
+				} else newData[i][j] = 
+						data[i][j];
+			}
+		}
+		data = new int[newX][newY];
+		data = newData.clone();
+		width = newX; height = newY;
+	}
+	
+	public void setPixelSize(int newPs) {
+		ps = newPs;
 	}
 }
