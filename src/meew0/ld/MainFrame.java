@@ -92,10 +92,10 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		saveFileItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-//				try {
-//					saveFile();
-//				} catch (IOException e) {
-//				}
+				try {
+					saveFile();
+				} catch (IOException e) {
+				}
 			}
 		});
 
@@ -111,10 +111,10 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		menuBar.add(fileMenu);
 		// Init tools menu
 		JMenu toolsMenu = new JMenu("Tools");
-		JMenuItem undoToolItem = new JMenuItem("Undo");
+		JMenuItem undoToolItem = new JMenuItem("Undo (NYI)");
 		undoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
 				ActionEvent.CTRL_MASK));
-		JMenuItem redoToolItem = new JMenuItem("Redo");
+		JMenuItem redoToolItem = new JMenuItem("Redo (NYI)");
 		redoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
 				ActionEvent.CTRL_MASK));
 		JMenuItem noToolItem = new JMenuItem("Cursor");
@@ -202,7 +202,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 				Charset.defaultCharset()).toArray(new String[] {});
 		String[] palRows = Files.readAllLines(Paths.get(levelRows[0]),
 				Charset.defaultCharset()).toArray(new String[] {});
-		Level lv = new Level(levelRows, palRows);
+		Level lv = new Level(levelRows, palRows, levelRows[0]);
 
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
@@ -269,7 +269,24 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 					Charset.defaultCharset()).toArray(new String[] {});
 			String[] palRows = Files.readAllLines(Paths.get(levelRows[0]),
 					Charset.defaultCharset()).toArray(new String[] {});
-			panel.l = new Level(levelRows, palRows);
+			panel.l = new Level(levelRows, palRows, levelRows[0]);
+			panel.repaint();
+			this.repaint();
+		}
+	}
+
+	public void saveFile() throws IOException {
+		if (!checkModified())
+			return;
+		JFileChooser fd = new JFileChooser();
+		int r = fd.showSaveDialog(this);
+		if (r == JFileChooser.APPROVE_OPTION) {
+			String[] levelRows = Files.readAllLines(
+					Paths.get(fd.getSelectedFile().getAbsolutePath()),
+					Charset.defaultCharset()).toArray(new String[] {});
+			String[] palRows = Files.readAllLines(Paths.get(levelRows[0]),
+					Charset.defaultCharset()).toArray(new String[] {});
+			panel.l = new Level(levelRows, palRows, levelRows[0]);
 			panel.repaint();
 			this.repaint();
 		}

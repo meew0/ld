@@ -2,6 +2,8 @@ package meew0.ld.level;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,8 +16,17 @@ import javax.swing.JOptionPane;
 public class Palette {
 	HashMap<Integer, Color> data;
 	HashMap<Integer, String> names;
+	String path;
 
 	public Palette() {
+	}
+	
+	private void setUnifiedPath(String newPath) {
+		try {
+			path = Paths.get(new URI("StandardPalette.ldp")).toAbsolutePath().toString();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void _init(String[] rows) {
@@ -43,12 +54,14 @@ public class Palette {
 		}
 	}
 
-	public Palette(String pStr) {
+	public Palette(String pStr, String p) {
+		setUnifiedPath(p);
 		String[] rows = pStr.split("\n");
 		_init(rows);
 	}
 
-	public Palette(String[] rows) {
+	public Palette(String[] rows, String p) {
+		setUnifiedPath(p);
 		_init(rows);
 	}
 
@@ -60,6 +73,7 @@ public class Palette {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			setUnifiedPath("StandardPalette.ldp");
 		}
 	}
 
@@ -89,5 +103,9 @@ public class Palette {
 
 	public void put(int i, Color c) {
 		data.put(i, c);
+	}
+	
+	public String getPath() {
+		return path;
 	}
 }

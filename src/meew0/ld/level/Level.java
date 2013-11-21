@@ -63,16 +63,16 @@ public class Level {
 		palette = new Palette(true);
 	}
 
-	public Level(String levelString, String paletteString) {
-		palette = new Palette(paletteString);
+	public Level(String levelString, String paletteString, String paletteP) {
+		palette = new Palette(paletteString, paletteP);
 		
 		String[] rows = levelString.split("\n");
 		_init2(rows);
 		
 	}
 
-	public Level(String[] levelRows, String[] paletteRows) {
-		palette = new Palette(paletteRows);
+	public Level(String[] levelRows, String[] paletteRows, String paletteP) {
+		palette = new Palette(paletteRows, paletteP);
 		
 		_init2(levelRows);
 		
@@ -132,7 +132,9 @@ public class Level {
 	
 	public String generateString() {
 		String[] rows = new String[height+2];
-		
+		rows[0] = palette.getPath();
+		rows[1] = "" + width + "," + height + "," + ps;
+		// TODO other string
 		String ret = "";
 		for(String s : rows) {
 			ret += s; ret += "\n";
