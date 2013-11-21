@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -66,6 +67,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		JMenuItem exitFileItem = new JMenuItem("Exit"); exitFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 
 		newFileItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { newFile(); }});
+		openFileItem.addActionListener(new ActionListener() { @Override public void actionPerformed(ActionEvent arg0) { try { openFile(); } catch (IOException e) {}}});
 		
 		
 		// Init file menu
@@ -119,7 +121,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		
 		this.setJMenuBar(menuBar);
 		
-		String[] levelRows = Files.readAllLines(Paths.get("testlevel.ldl"), Charset.defaultCharset()).toArray(new String[]{});
+		String[] levelRows = Files.readAllLines(Paths.get("StandardLevel.ldl"), Charset.defaultCharset()).toArray(new String[]{});
 		String[] palRows = Files.readAllLines(Paths.get(levelRows[0]), Charset.defaultCharset()).toArray(new String[]{});
 		Level lv = new Level(levelRows, palRows);
 		
@@ -171,6 +173,23 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		panel.l = lv;
 		SizeDialog d = new SizeDialog(this);
 		d.setVisible(true);
+	}
+	
+	public void openFile() throws IOException {
+		if(!checkModified()) return;
+		JFileChooser fd = new JFileChooser();
+		int r = fd.showOpenDialog(this);
+		if(r == JFileChooser.APPROVE_OPTION) {
+			String[] levelRows = Files.readAllLines(
+					Paths.get(fd.getSelectedFile().getAbsolutePath()),
+					Charset.defaultCharset()).toArray(new String[]{});
+			String[] palRows = Files.readAllLines(
+					Paths.get(levelRows[0]), Charset.defaultCharset())
+					.toArray(new String[]{});
+			panel.l = new Level(levelRows, palRows);
+			panel.repaint();
+			this.repaint();
+		}
 	}
 	
 	private boolean checkModified() {
