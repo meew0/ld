@@ -258,4 +258,9 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		statusLabel.setText("" + panel.getDimension() + "x - Grid " + (panel.isGrid() ? "enabled" : "disabled"));
 	}
 
+	@Override
+	public void onInvalidation2() {
+		this.repaint();
+	}
+
 }
