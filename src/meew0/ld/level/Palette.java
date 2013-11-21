@@ -1,6 +1,10 @@
 package meew0.ld.level;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +50,17 @@ public class Palette {
 
 	public Palette(String[] rows) {
 		_init(rows);
+	}
+
+	public Palette(boolean b) {
+		if(b) {
+			try {
+				String[] lines = Files.readAllLines(Paths.get("StandardPalette.ldp"), Charset.defaultCharset()).toArray(new String[]{});
+				_init(lines);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public Color getColor(int i) {

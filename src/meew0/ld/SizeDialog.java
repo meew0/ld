@@ -30,6 +30,7 @@ public class SizeDialog extends JFrame {
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				frame.setLevelSize((int) spinner.getValue(), (int) spinner_1.getValue(), (int) spinner_2.getValue());
+				setVisible(false);
 			}
 		});
 		

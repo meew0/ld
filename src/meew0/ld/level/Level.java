@@ -60,6 +60,7 @@ public class Level {
 
 	public Level(int w, int h, int pixelSize) {
 		_init(w, h, pixelSize);
+		palette = new Palette(true);
 	}
 
 	public Level(String levelString, String paletteString) {
