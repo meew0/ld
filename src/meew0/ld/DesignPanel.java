@@ -129,8 +129,8 @@ public class DesignPanel extends JPanel implements MouseListener,
 		int y = e.getY();
 
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			double pX = x / ps;
-			double pY = y / ps;
+			double pX = (x + oX) / ps;
+			double pY = (y + oY) / ps;
 
 			callPanelClick((int) pX, (int) pY);
 		}

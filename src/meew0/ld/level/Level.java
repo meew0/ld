@@ -129,4 +129,14 @@ public class Level {
 	public void setPixelSize(int newPs) {
 		ps = newPs;
 	}
+	
+	public String generateString() {
+		String[] rows = new String[height+2];
+		
+		String ret = "";
+		for(String s : rows) {
+			ret += s; ret += "\n";
+		}
+		return ret;
+	}
 }

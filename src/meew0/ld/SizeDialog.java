@@ -34,6 +34,8 @@ public class SizeDialog extends JFrame {
 			}
 		});
 		
+		this.pack();
+		
 		getContentPane().add(btnOk);
 	}
 
