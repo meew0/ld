@@ -7,13 +7,18 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,6 +32,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FontUIResource;
 
 import meew0.ld.level.Level;
@@ -51,11 +57,45 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	private int tool, v = 0;
 
 	private boolean modified = false;
+	private FileFilter filter;
 
 	public MainFrame() throws IOException {
 		super("ld" + VERSION);
 
+		filter = new FileFilter() {
+
+			@Override
+			public boolean accept(File pathname) {
+				if(pathname.isDirectory()) return true;
+				String fileName = pathname.getName();
+				System.out.println(fileName);
+				String extension = "";
+
+				int i = fileName.lastIndexOf('.');
+				if (i >= 0) {
+					extension = fileName.substring(i + 1);
+				}
+				System.out.println(extension);
+				return extension.equalsIgnoreCase("ldl");
+			}
+
+			@Override
+			public String getDescription() {
+				return "ld level file (.ldl)";
+			}
+		};
+
 		this.setBackground(Color.white);
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (checkModified()) {
+					System.exit(0);
+				}
+			}
+		});
 
 		JMenuBar menuBar = new JMenuBar();
 		// Init menus
@@ -234,7 +274,8 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 
 		this.add(p);
 
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		ImageIcon logo = new ImageIcon("logo.png");
+		this.setIconImage(logo.getImage());
 
 		this.setSize(600, 400);
 		this.setVisible(true);
@@ -262,6 +303,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		if (!checkModified())
 			return;
 		JFileChooser fd = new JFileChooser();
+		fd.setFileFilter(filter);
 		int r = fd.showOpenDialog(this);
 		if (r == JFileChooser.APPROVE_OPTION) {
 			String[] levelRows = Files.readAllLines(
@@ -279,24 +321,23 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		if (!checkModified())
 			return;
 		JFileChooser fd = new JFileChooser();
+		fd.setFileFilter(filter);
 		int r = fd.showSaveDialog(this);
 		if (r == JFileChooser.APPROVE_OPTION) {
-			String[] levelRows = Files.readAllLines(
-					Paths.get(fd.getSelectedFile().getAbsolutePath()),
-					Charset.defaultCharset()).toArray(new String[] {});
-			String[] palRows = Files.readAllLines(Paths.get(levelRows[0]),
-					Charset.defaultCharset()).toArray(new String[] {});
-			panel.l = new Level(levelRows, palRows, levelRows[0]);
-			panel.repaint();
-			this.repaint();
+			Files.write(fd.getSelectedFile().toPath(),
+					Arrays.asList(panel.l.generateString()),
+					Charset.defaultCharset());
 		}
 	}
 
 	private boolean checkModified() {
 		if (modified) {
-			if (JOptionPane.showConfirmDialog(this,
-					"You have unsaved changes! Are you sure you want to do this?",
-					"ld", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+			System.out.println("Modified");
+			if (JOptionPane
+					.showConfirmDialog(
+							this,
+							"You have unsaved changes! Are you sure you want to do this?",
+							"ld", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
 				return false;
 			}
 		}
@@ -325,7 +366,6 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 	}
 
 	public static void main(String[] args) throws Throwable {
-		// UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		initLAF();
 		new MainFrame();
 	}

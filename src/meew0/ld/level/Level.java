@@ -130,15 +130,18 @@ public class Level {
 		ps = newPs;
 	}
 	
-	public String generateString() {
+	public String[] generateString() {
 		String[] rows = new String[height+2];
 		rows[0] = palette.getPath();
 		rows[1] = "" + width + "," + height + "," + ps;
-		// TODO other string
-		String ret = "";
-		for(String s : rows) {
-			ret += s; ret += "\n";
+		for(int i = 0; i < height; i++) {
+			rows[i+2] = "";
+			for(int j = 0; j < width; j++) {
+				rows[i+2] += data[i][j];
+				rows[i+2] += ",";
+			}
+			rows[i+2] = rows[i+2].substring(0, rows[i+2].length()-1);
 		}
-		return ret;
+		return rows;
 	}
 }
