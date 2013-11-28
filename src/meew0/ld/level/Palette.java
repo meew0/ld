@@ -20,13 +20,9 @@ public class Palette {
 
 	public Palette() {
 	}
-	
+
 	private void setUnifiedPath(String newPath) {
-		try {
-			path = Paths.get(new URI("StandardPalette.ldp")).toAbsolutePath().toString();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
+		path = Paths.get("StandardPalette.ldp").toAbsolutePath().toString();
 	}
 
 	private void _init(String[] rows) {
@@ -66,9 +62,11 @@ public class Palette {
 	}
 
 	public Palette(boolean b) {
-		if(b) {
+		if (b) {
 			try {
-				String[] lines = Files.readAllLines(Paths.get("StandardPalette.ldp"), Charset.defaultCharset()).toArray(new String[]{});
+				String[] lines = Files.readAllLines(
+						Paths.get("StandardPalette.ldp"),
+						Charset.defaultCharset()).toArray(new String[] {});
 				_init(lines);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -80,31 +78,31 @@ public class Palette {
 	public Color getColor(int i) {
 		return data.get(i);
 	}
-	
+
 	public String getName(int i) {
 		return names.get(i);
 	}
-	
+
 	public List<PaletteEntry> getEntriesList() {
 		ArrayList<PaletteEntry> list = new ArrayList<PaletteEntry>();
-		
-		for(int i : data.keySet()) {
+
+		for (int i : data.keySet()) {
 			PaletteEntry entry = new PaletteEntry();
-			
+
 			entry.setNum(i);
 			entry.setColor(data.get(i));
 			entry.setName(names.get(i));
-			
+
 			list.add(entry);
 		}
-		
+
 		return list;
 	}
 
 	public void put(int i, Color c) {
 		data.put(i, c);
 	}
-	
+
 	public String getPath() {
 		return path;
 	}
