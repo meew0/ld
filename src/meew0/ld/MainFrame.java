@@ -155,10 +155,10 @@ public class MainFrame extends JFrame implements DesignPanelListener, UndoListen
 		menuBar.add(fileMenu);
 		// Init tools menu
 		JMenu toolsMenu = new JMenu("Tools");
-		JMenuItem undoToolItem = new JMenuItem("Undo (NYI)");
+		JMenuItem undoToolItem = new JMenuItem("Undo");
 		undoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z,
 				ActionEvent.CTRL_MASK));
-		JMenuItem redoToolItem = new JMenuItem("Redo (NYI)");
+		JMenuItem redoToolItem = new JMenuItem("Redo");
 		redoToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
 				ActionEvent.CTRL_MASK));
 		JMenuItem noToolItem = new JMenuItem("Cursor");
