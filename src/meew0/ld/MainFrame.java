@@ -37,8 +37,11 @@ import javax.swing.plaf.FontUIResource;
 
 import meew0.ld.level.Level;
 import meew0.ld.level.PaletteEntry;
+import meew0.ld.undo.LevelSetter;
+import meew0.ld.undo.UndoListener;
+import meew0.ld.undo.UndoStack;
 
-public class MainFrame extends JFrame implements DesignPanelListener {
+public class MainFrame extends JFrame implements DesignPanelListener, UndoListener {
 
 	/**
 	 * 
@@ -58,6 +61,7 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 
 	private boolean modified = false;
 	private FileFilter filter;
+	private UndoStack stack;
 
 	public MainFrame() throws IOException {
 		super("ld" + VERSION);
@@ -175,6 +179,18 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		toggleGridItem.setAccelerator(KeyStroke
 				.getKeyStroke(KeyEvent.VK_F11, 0));
 
+		undoToolItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				stack.undo();
+			}
+		});
+		redoToolItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				stack.redo();
+			}
+		});
 		noToolItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -243,6 +259,10 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		String[] palRows = Files.readAllLines(Paths.get(levelRows[0]),
 				Charset.defaultCharset()).toArray(new String[] {});
 		Level lv = new Level(levelRows, palRows, levelRows[0]);
+		
+		stack = new UndoStack();
+		stack.registerUndoListener(this);
+		LevelSetter.setLevelTo(lv);
 
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
@@ -376,18 +396,18 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 		if (x < panel.l.getWidth() && y < panel.l.getHeight()) {
 			switch (tool) {
 			case PIXEL:
-				panel.l.setDataAt(y, x, v);
+				stack.push(y, x, v);
 				modified = true;
 				break;
 			case LINE:
 				for (int i = 0; i < panel.l.getWidth(); i++)
-					panel.l.setDataAt(y, i, v);
+					stack.push(y, i, v);
 				modified = true;
 				break;
 			case ALL:
 				for (int i = 0; i < panel.l.getWidth(); i++)
 					for (int j = 0; j < panel.l.getHeight(); j++)
-						panel.l.setDataAt(i, j, v);
+						stack.push(i, j, v);
 				modified = true;
 				break;
 			default:
@@ -409,6 +429,16 @@ public class MainFrame extends JFrame implements DesignPanelListener {
 
 	@Override
 	public void onInvalidation2() {
+		this.repaint();
+	}
+
+	@Override
+	public void onUndo() {
+		this.repaint();
+	}
+
+	@Override
+	public void onRedo() {
 		this.repaint();
 	}
 
